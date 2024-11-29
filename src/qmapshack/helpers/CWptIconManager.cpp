@@ -296,6 +296,13 @@ QString CWptIconManager::getNumberedBullet(qint32 n) {
 
 QMenu* CWptIconManager::getWptIconMenu(const QString& title, QObject* obj, const char* slot, QWidget* parent) {
   QMenu* menu = new QMenu(title, parent);
+
+  qDebug() << "sizeHint initial: " << menu->sizeHint();
+  qDebug() << "size initial: " << menu->size();
+  qDebug() << "sizePolicy" << menu->sizePolicy();
+  qDebug() << "geometry initial: " << menu->geometry();
+  qDebug() << "layout initial: " << menu->layout();
+
   menu->setIcon(QIcon("://icons/waypoints/32x32/PinBlue.png"));
 
   const QMap<QString, icon_t>& wptIcons = getWptIcons();
@@ -306,13 +313,24 @@ QMenu* CWptIconManager::getWptIconMenu(const QString& title, QObject* obj, const
   for (const QString& key : std::as_const(keys)) {
     const QString& icon = wptIcons[key].path;
     QPixmap pixmap = loadIcon(icon);
-
     QAction* action = menu->addAction(pixmap, key);
     action->setProperty("iconName", key);
     if (obj != nullptr) {
       QAction::connect(action, SIGNAL(triggered(bool)), obj, slot);
     }
   }
+
+  // QScreen* screen = QGuiApplication::primaryScreen();
+  // QRect geo = screen->geometry();
+  // menu->setMaximumHeight(geo.height());
+  // menu->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Ignored);
+  // menu->updateGeometry();
+
+  qDebug() << "sizeHint end: " << menu->sizeHint();
+  qDebug() << "size end: " << menu->size();
+  qDebug() << "sizePolicy end: " << menu->sizePolicy();
+  qDebug() << "geometry end: " << menu->geometry();
+  qDebug() << "layout end: " << menu->layout();
 
   return menu;
 }
