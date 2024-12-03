@@ -314,14 +314,16 @@ QMenu* CWptIconManager::getWptIconMenu(const QString& title, QObject* obj, const
     }
   }
 
-  // Workaround for a bug when the height exceeds screenheight.
-  // Some styles, e.g. "breeze" on kde produce this bug.
-  // Trying to apply a default style in this case, e.g. "windows" or "fusion".
-  QRect screenSize = QGuiApplication::primaryScreen()->geometry();
-  QSize menuSize = menu->sizeHint();
-  if (menuSize.height() > screenSize.height()) {
+  // Workaround for https://bugs.kde.org/show_bug.cgi?id=496930.
+  // Apply a Qt default style in this case
+  QRect screenGeometry = parent->windowHandle()->screen()->geometry();
+  QSize menuPreferredSize = menu->sizeHint();
+
+  if (menuPreferredSize.height() > screenGeometry.height()) {
     qDebug() << "Found a misbehaving style: " << QApplication::style()->objectName();
+
     QStyle* style = QStyleFactory::create("fusion");
+
     if (style != nullptr){
       qDebug() << "Applying a default style for widget QMenu";
       menu->setStyle(style);
