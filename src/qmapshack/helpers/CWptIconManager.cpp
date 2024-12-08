@@ -316,18 +316,16 @@ QMenu* CWptIconManager::getWptIconMenu(const QString& title, QObject* obj, const
 
   // Workaround for https://bugs.kde.org/show_bug.cgi?id=496930.
   // Apply a Qt default style in this case
-  QRect screenGeometry = parent->windowHandle()->screen()->geometry();
-  QSize menuPreferredSize = menu->sizeHint();
+  const QRect& screenGeometry = parent->windowHandle()->screen()->geometry();
+  const QSize& menuPreferredSize = menu->sizeHint();
 
   if (menuPreferredSize.height() > screenGeometry.height()) {
     qDebug() << "Found a misbehaving style: " << QApplication::style()->objectName();
+    qDebug() << "Try to apply a default style for waypoint menu";
 
-    QStyle* style = QStyleFactory::create("fusion");
-
-    if (style != nullptr){
-      qDebug() << "Applying a default style for widget QMenu";
-      menu->setStyle(style);
-    }
+    QStyle* style = (QStyleFactory::create("fusion") != nullptr) ? QStyleFactory::create("fusion") : QStyleFactory::create("windows");
+    style->setParent(menu);
+    menu->setStyle(style);
   }
 
   return menu;
